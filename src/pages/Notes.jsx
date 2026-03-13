@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { db } from '../firebase';
-import { ref, push, onValue, set } from 'firebase/database';
+import { ref, push, onValue } from 'firebase/database';
 
 const NOTES_REF = 'love-notes';
 
@@ -17,13 +17,9 @@ export default function Notes() {
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Clear all existing notes from Firebase, then listen for updates
+    // Listen for real-time updates from Firebase
     useEffect(() => {
         const notesRef = ref(db, NOTES_REF);
-
-        // Delete all existing notes
-        set(notesRef, null);
-
         const unsubscribe = onValue(notesRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
