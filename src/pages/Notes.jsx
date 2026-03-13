@@ -5,14 +5,6 @@ import { ref, push, onValue, set } from 'firebase/database';
 
 const NOTES_REF = 'love-notes';
 
-const defaultNotes = [
-    { name: 'Aditya', msg: 'You\'re the best thing that ever happened to me 💖', time: 'Mar 24, 2021', color: 'var(--pink)' },
-    { name: 'Aalu', msg: 'Stop being so cute, I can\'t handle it 🥺', time: 'Mar 24, 2021', color: 'var(--lavender)' },
-    { name: 'Aditya', msg: 'Remember our first date? Still gives me butterflies 🦋', time: 'Mar 25, 2021', color: 'var(--mint)' },
-    { name: 'Aalu', msg: 'You always know how to make me smile 😊', time: 'Mar 26, 2021', color: 'var(--baby-blue)' },
-    { name: 'Aditya', msg: 'I love you more than all the stars combined ⭐', time: 'Mar 27, 2021', color: 'var(--pink)' },
-];
-
 function formatTimestamp() {
     const now = new Date();
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -25,9 +17,13 @@ export default function Notes() {
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Listen for real-time updates from Firebase
+    // Clear all existing notes from Firebase, then listen for updates
     useEffect(() => {
         const notesRef = ref(db, NOTES_REF);
+
+        // Delete all existing notes
+        set(notesRef, null);
+
         const unsubscribe = onValue(notesRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -35,10 +31,7 @@ export default function Notes() {
                 const notesList = Object.values(data).reverse();
                 setNotes(notesList);
             } else {
-                // Seed default notes if database is empty
-                defaultNotes.forEach((note) => {
-                    push(ref(db, NOTES_REF), note);
-                });
+                setNotes([]);
             }
             setLoading(false);
         });
