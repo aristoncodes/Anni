@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { db } from '../firebase';
+import { ref, push, onValue, set } from 'firebase/database';
 
-const STORAGE_KEY = 'anniversary-love-notes';
+const NOTES_REF = 'love-notes';
 
 const defaultNotes = [
     { name: 'Aditya', msg: 'You\'re the best thing that ever happened to me 💖', time: 'Mar 24, 2021', color: 'var(--pink)' },
@@ -10,14 +12,6 @@ const defaultNotes = [
     { name: 'Aalu', msg: 'You always know how to make me smile 😊', time: 'Mar 26, 2021', color: 'var(--baby-blue)' },
     { name: 'Aditya', msg: 'I love you more than all the stars combined ⭐', time: 'Mar 27, 2021', color: 'var(--pink)' },
 ];
-
-function loadNotes() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-    } catch (e) { /* ignore */ }
-    return defaultNotes;
-}
 
 function formatTimestamp() {
     const now = new Date();
@@ -28,12 +22,29 @@ function formatTimestamp() {
 export default function Notes() {
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
-    const [notes, setNotes] = useState(loadNotes);
+    const [notes, setNotes] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Save to localStorage whenever notes change
+    // Listen for real-time updates from Firebase
     useEffect(() => {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (e) { /* ignore */ }
-    }, [notes]);
+        const notesRef = ref(db, NOTES_REF);
+        const unsubscribe = onValue(notesRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Convert Firebase object to array, newest first
+                const notesList = Object.values(data).reverse();
+                setNotes(notesList);
+            } else {
+                // Seed default notes if database is empty
+                defaultNotes.forEach((note) => {
+                    push(ref(db, NOTES_REF), note);
+                });
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -45,7 +56,7 @@ export default function Notes() {
             time: formatTimestamp(),
             color: colors[Math.floor(Math.random() * colors.length)],
         };
-        setNotes([newNote, ...notes]);
+        push(ref(db, NOTES_REF), newNote);
         setName('');
         setMessage('');
     };
@@ -102,7 +113,15 @@ export default function Notes() {
 
             {/* Notes feed */}
             <div style={{ maxWidth: 480, width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {notes.map((note, i) => (
+                {loading ? (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        style={{ textAlign: 'center', padding: 40, color: 'var(--text-light)' }}
+                    >
+                        Loading notes... 💭
+                    </motion.div>
+                ) : notes.map((note, i) => (
                     <motion.div
                         key={`${note.time}-${i}`}
                         initial={{ opacity: 0, x: -20 }}
