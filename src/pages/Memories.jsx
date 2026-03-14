@@ -9,10 +9,9 @@ const MemoryCard = ({ p, i, onClick }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: Math.min(i * 0.1, 1.5) }}
             whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
             onClick={onClick}
             style={{
