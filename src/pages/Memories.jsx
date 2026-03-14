@@ -1,61 +1,90 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import mediaItems from '../assets/memories.json';
+
+const MemoryCard = ({ p, i, onClick }) => {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            transition={{ duration: 0.4 }}
+            whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
+            onClick={onClick}
+            style={{
+                borderRadius: '16px', overflow: 'hidden', cursor: 'pointer',
+                position: 'relative', background: 'var(--bg-secondary)', 
+                boxShadow: 'var(--shadow-soft)', display: 'flex', flexDirection: 'column',
+                aspectRatio: '1/1'
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {/* Skeleton Loading Background */}
+            {!isLoaded && (
+                <div style={{
+                    position: 'absolute', inset: 0, 
+                    backgroundColor: '#e0e0e0',
+                    animation: 'pulse 1.5s infinite ease-in-out'
+                }} />
+            )}
+
+            <img
+                src={`https://drive.google.com/thumbnail?id=${p.id}&sz=w600`}
+                alt={p.caption}
+                loading="lazy"
+                onLoad={() => setIsLoaded(true)}
+                style={{ 
+                    width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                    opacity: isLoaded ? 1 : 0, transition: 'opacity 0.4s ease'
+                }}
+                onError={(e) => { e.target.src = `https://drive.google.com/uc?id=${p.id}&export=view`; }}
+            />
+
+            {p.type === 'video' && (
+                <>
+                    {isHovered && (
+                        <iframe
+                            src={`https://drive.google.com/file/d/${p.id}/preview`}
+                            allow="autoplay"
+                            style={{
+                                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                                pointerEvents: 'none', objectFit: 'cover', zIndex: 2, border: 'none'
+                            }}
+                        />
+                    )}
+                    <div style={{ position: 'absolute', top: 12, right: 12, pointerEvents: 'none', zIndex: 3 }}>
+                        <span style={{ fontSize: 24, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>🎥</span>
+                    </div>
+                </>
+            )}
+
+            <div className="photo-overlay" style={{
+                position: 'absolute', inset: 0, background: 'linear-gradient(transparent 50%, rgba(0,0,0,0.5))',
+                display: 'flex', alignItems: 'flex-end', padding: 16, pointerEvents: 'none', zIndex: 4,
+                opacity: isLoaded ? 1 : 0, transition: 'opacity 0.4s ease'
+            }}>
+                <span style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>{p.caption}</span>
+            </div>
+            
+            <style>{`
+                @keyframes pulse {
+                    0% { opacity: 0.6; }
+                    50% { opacity: 0.2; }
+                    100% { opacity: 0.6; }
+                }
+            `}</style>
+        </motion.div>
+    );
+};
+
 export default function Memories() {
     const [lightbox, setLightbox] = useState(null);
-    const [visibleCount, setVisibleCount] = useState(30);
-    const [isLoadingInitial, setIsLoadingInitial] = useState(true);
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [loadedImages, setLoadedImages] = useState(0);
-
-    // Preload images before revealing the grid
-    useEffect(() => {
-        if (visibleCount === 30) {
-            setIsLoadingInitial(true);
-        } else {
-            setIsLoadingMore(true);
-        }
-        setLoadedImages(0);
-
-        // We only need to preload the *new* batch of images
-        const currentBatchStartIndex = visibleCount === 30 ? 0 : visibleCount - 30;
-        const currentBatch = mediaItems.slice(currentBatchStartIndex, visibleCount);
-        let loadedCount = 0;
-
-        currentBatch.forEach((item) => {
-            if (item.type === 'image') {
-                const img = new Image();
-                img.src = `https://drive.google.com/uc?id=${item.id}&export=view`;
-                img.onload = () => {
-                    loadedCount++;
-                    setLoadedImages(loadedCount);
-                    if (loadedCount === currentBatch.filter(i => i.type === 'image').length) {
-                        setIsLoadingInitial(false);
-                        setIsLoadingMore(false);
-                    }
-                };
-                img.onerror = () => {
-                    // Fallback to thumbnail on error to prevent hanging
-                    img.src = `https://drive.google.com/thumbnail?id=${item.id}&sz=w600`;
-                    loadedCount++;
-                    setLoadedImages(loadedCount);
-                    if (loadedCount === currentBatch.filter(i => i.type === 'image').length) {
-                        setIsLoadingInitial(false);
-                        setIsLoadingMore(false);
-                    }
-                };
-            } else {
-                // Instantly "load" videos so they don't block the image preloader
-                loadedCount++;
-                setLoadedImages(loadedCount);
-                if (loadedCount === currentBatch.filter(i => i.type === 'image').length) {
-                    setIsLoadingInitial(false);
-                    setIsLoadingMore(false);
-                }
-            }
-        });
-    }, [visibleCount]);
+    const [visibleCount, setVisibleCount] = useState(15);
 
     return (
         <div className="page-wrapper" style={{ padding: '60px 24px' }}>
@@ -69,116 +98,32 @@ export default function Memories() {
                 <p style={{ color: 'var(--text-light)', marginTop: 8 }}>Moments frozen in time, forever in our hearts.</p>
             </motion.div>
 
-            {isLoadingInitial ? (
-                <div style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                    minHeight: '50vh', gap: 16
-                }}>
-                    <div style={{ 
-                        width: 48, height: 48, border: '4px solid rgba(216,27,96,0.2)', 
-                        borderTopColor: 'var(--primary)', borderRadius: '50%', 
-                        animation: 'spin 1s linear infinite' 
-                    }} />
-                    <p style={{ color: 'var(--text-light)', fontWeight: 500 }}>
-                        Loading Memories ({loadedImages} / {mediaItems.slice(0, 30).filter(i => i.type === 'image').length})...
-                    </p>
-                    <style>{`
-                        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                    `}</style>
-                </div>
-            ) : (
-                <>
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                        gap: 16, maxWidth: 1000, width: '100%',
-                        margin: '0 auto'
-                    }}>
-                        {mediaItems.slice(0, visibleCount).map((p, i) => (
-                    <motion.div
-                        key={i}
-                        className="photo-card"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-                        transition={{ duration: 0.4 }}
-                        whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
-                        onClick={() => setLightbox(i)}
-                        style={{
-                            borderRadius: '16px', overflow: 'hidden', cursor: 'pointer',
-                            position: 'relative', background: 'var(--bg-secondary)', 
-                            boxShadow: 'var(--shadow-soft)', display: 'flex', flexDirection: 'column'
-                        }}
-                    >
-                        {p.type === 'video' ? (
-                            <div 
-                                style={{ position: 'relative', width: '100%', aspectRatio: '1/1' }}
-                                onMouseEnter={(e) => {
-                                    const iframe = e.currentTarget.querySelector('iframe');
-                                    if (iframe) iframe.style.opacity = '1';
-                                }}
-                                onMouseLeave={(e) => {
-                                    const iframe = e.currentTarget.querySelector('iframe');
-                                    if (iframe) iframe.style.opacity = '0';
-                                }}
-                            >
-                                <img
-                                    src={`https://drive.google.com/uc?id=${p.id}&export=view`}
-                                    loading="lazy"
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', backgroundColor: '#f0f0f0' }}
-                                    onError={(e) => { e.target.src = `https://drive.google.com/thumbnail?id=${p.id}&sz=w600`; }}
-                                />
-                                
-                                {/* Hidden iframe that appears and auto-plays on hover */}
-                                <iframe
-                                    src={`https://drive.google.com/file/d/${p.id}/preview?autoplay=1&mute=1&loop=1`}
-                                    allow="autoplay"
-                                    style={{
-                                        position: 'absolute', inset: 0, width: '100%', height: '100%',
-                                        border: 'none', opacity: 0, transition: 'opacity 0.3s ease',
-                                        pointerEvents: 'none', objectFit: 'cover'
-                                    }}
-                                />
-                                <div style={{ position: 'absolute', top: 12, right: 12, pointerEvents: 'none' }}>
-                                    <span style={{ fontSize: 24, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>🎥</span>
-                                </div>
-                            </div>
-                        ) : (
-                            <img
-                                src={`https://drive.google.com/uc?id=${p.id}&export=view`}
-                                alt={p.caption}
-                                loading="lazy"
-                                style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block', backgroundColor: '#f0f0f0' }}
-                                onError={(e) => { e.target.src = `https://drive.google.com/thumbnail?id=${p.id}&sz=w600`; }}
-                            />
-                        )}
-                        <div className="photo-overlay" style={{
-                            position: 'absolute', inset: 0, background: 'linear-gradient(transparent 50%, rgba(0,0,0,0.5))',
-                            display: 'flex', alignItems: 'flex-end', padding: 16, pointerEvents: 'none'
-                        }}>
-                            <span style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>{p.caption}</span>
-                        </div>
-                    </motion.div>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                gap: 16, maxWidth: 1000, width: '100%',
+                margin: '0 auto'
+            }}>
+                {mediaItems.slice(0, visibleCount).map((p, i) => (
+                    <MemoryCard key={i} p={p} i={i} onClick={() => setLightbox(i)} />
                 ))}
-                        {visibleCount < mediaItems.length && (
-                            <div style={{ textAlign: 'center', marginTop: 40, width: '100%', gridColumn: '1 / -1' }}>
-                                <button 
-                                    onClick={() => setVisibleCount(v => v + 30)}
-                                    disabled={isLoadingMore}
-                                    style={{ 
-                                        padding: '12px 24px', borderRadius: 'var(--radius)', 
-                                        background: isLoadingMore ? '#ccc' : 'var(--primary, #d81b60)', 
-                                        color: '#fff', border: 'none', cursor: isLoadingMore ? 'not-allowed' : 'pointer', 
-                                        fontSize: 16, fontWeight: 500, boxShadow: 'var(--shadow-soft)',
-                                    }}
-                                >
-                                    {isLoadingMore ? `Loading more...` : `Load More Memories`}
-                                </button>
-                            </div>
-                        )}
+                
+                {visibleCount < mediaItems.length && (
+                    <div style={{ textAlign: 'center', marginTop: 40, width: '100%', gridColumn: '1 / -1' }}>
+                        <button 
+                            onClick={() => setVisibleCount(v => v + 15)}
+                            style={{ 
+                                padding: '12px 24px', borderRadius: 'var(--radius)', 
+                                background: 'var(--primary, #d81b60)', color: '#fff', 
+                                border: 'none', cursor: 'pointer', fontSize: 16, 
+                                fontWeight: 500, boxShadow: 'var(--shadow-soft)'
+                            }}
+                        >
+                            Load More Memories
+                        </button>
                     </div>
-                </>
-            )}
+                )}
+            </div>
 
             {/* Lightbox */}
             <AnimatePresence>
@@ -203,8 +148,8 @@ export default function Memories() {
                         >
                             {mediaItems[lightbox].type === 'video' ? (
                                 <iframe
-                                    src={`https://drive.google.com/file/d/${mediaItems[lightbox].id}/preview?autoplay=1&mute=0`}
-                                    allow="autoplay"
+                                    src={`https://drive.google.com/file/d/${mediaItems[lightbox].id}/preview`}
+                                    allow="autoplay; fullscreen"
                                     style={{ width: '100%', borderRadius: '16px', height: '70vh', border: 'none', background: '#000' }}
                                 />
                             ) : (
