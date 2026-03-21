@@ -358,7 +358,7 @@ export default function FakeError() {
                                 >
                                     <img src="/us.png" alt="Us 💕"
                                         style={{
-                                            width: '100%', maxWidth: 340, borderRadius: 20,
+                                            width: '100%', maxWidth: 420, borderRadius: 20,
                                             boxShadow: '0 25px 80px rgba(244,167,185,0.3), 0 0 60px rgba(201,160,220,0.15), 0 0 120px rgba(244,167,185,0.08)',
                                             border: '2px solid rgba(255,255,255,0.08)',
                                         }}
