@@ -9,7 +9,7 @@ const reasons = [
     'Your hugs have actual healing powers 🤗',
     "You believe in me even when I don't believe in myself 💪",
     'Every song sounds better because it reminds me of you 🎵',
-    'The way you scrunch your nose when you laugh 😊',
+    'The way you always beat me 😊',
     'Your voice is my favorite notification sound 📱',
     'You turn my worst days into bearable ones just by existing 🌈',
     "I'd choose you in every timeline, every universe ♾️",
