@@ -5,15 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 const QUIZ_QUESTIONS = [
     { q: "What's our anniversary date?", options: ['March 24', 'Feb 14', 'Jan 1', 'Dec 25'], correct: 0, cat: 'Our Story' },
     { q: "What's my favorite thing about you?", options: ['Your eyes', 'Your smile', 'Everything!', 'Your laugh'], correct: 2, cat: 'Feelings' },
-    { q: "What was our first date?", options: ['Movie night', 'Coffee date', 'Long walk', 'Dinner'], correct: 1, cat: 'Our Story' },
+    { q: "What you love doing?", options: ['Sleeping', 'Eating', 'Beating Me', 'Sleeping'], correct: 3, cat: 'Our Story' },
     { q: "How much do I love you?", options: ['A lot', 'More than food', 'To infinity', 'All of the above 💖'], correct: 3, cat: 'Feelings' },
-    { q: "What's our song?", options: ['Perfect', 'All of Me', 'A Thousand Years', 'You decide! 💜'], correct: 3, cat: 'Favorites' },
     { q: "What do we call each other?", options: ['Honey & Darling', 'Jim & Jam', 'Sugar & Spice', 'Babe & Baby'], correct: 1, cat: 'Inside Jokes' },
     { q: "What's her birth month?", options: ['April', 'June', 'August', 'October'], correct: 2, cat: 'Our Story' },
     { q: "What's his birth month?", options: ['March', 'April', 'May', 'June'], correct: 1, cat: 'Our Story' },
     { q: "Our monthly anniversary is on the?", options: ['1st', '14th', '24th', '30th'], correct: 2, cat: 'Our Story' },
     { q: "If love had a flavor, ours would be?", options: ['Sweet', 'Spicy', 'A whole dessert buffet 🎂', 'Umm... cheesy? 🧀'], correct: 2, cat: 'Fun' },
-    { q: "What we fight about most?", options: ['Who loves more', 'Food choices', 'Who texts first', 'Nothing, we perfect 😏'], correct: 0, cat: 'Inside Jokes' },
     { q: "Our relationship in one emoji?", options: ['🔥', '💕', '🥺', '♾️'], correct: 3, cat: 'Feelings' },
 ];
 
@@ -354,7 +352,7 @@ export default function TerminalQuiz() {
                                 borderTop: `1px solid ${T.border}`,
                             }}>
                             <span style={{ color: unlocked ? T.lavender : T.mint, marginRight: 10, fontSize: 14 }}>
-                                {unlocked ? '💕 ~' : '>'} 
+                                {unlocked ? '💕 ~' : '>'}
                             </span>
                             <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
                                 placeholder={unlocked ? 'Type a command...' : ''}
