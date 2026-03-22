@@ -163,7 +163,7 @@ export default function FlappyHeart() {
                 <span style={{ fontSize: 11, color: C.muted }}>Best: <span style={{ color: C.gold, fontWeight: 700 }}>{best}</span></span>
             </div>
 
-            <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', border: `1px solid ${C.border}`, boxShadow: '0 8px 40px rgba(0,0,0,0.3)' }}
+            <div className="flappy-canvas" style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', border: `1px solid ${C.border}`, boxShadow: '0 8px 40px rgba(0,0,0,0.3)' }}
                 onClick={jump}>
                 <canvas ref={canvasRef} width={400} height={500}
                     style={{ display: 'block', cursor: 'pointer' }} />
@@ -194,6 +194,12 @@ export default function FlappyHeart() {
                     </div>
                 )}
             </div>
+            <style>{`
+                @media (max-width: 600px) {
+                    .flappy-canvas { max-width: 100vw !important; }
+                    .flappy-canvas canvas { width: 100% !important; height: auto !important; }
+                }
+            `}</style>
         </div>
     );
 }

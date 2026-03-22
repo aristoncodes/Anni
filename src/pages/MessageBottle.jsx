@@ -577,6 +577,12 @@ export default function MessageBottle() {
                     </motion.form>
                 )}
             </motion.div>
+            <style>{`
+                @media (max-width: 600px) {
+                    .page-wrapper h1 { font-size: 26px !important; }
+                    .page-wrapper { padding: 40px 14px 140px !important; }
+                }
+            `}</style>
         </div>
     );
 }

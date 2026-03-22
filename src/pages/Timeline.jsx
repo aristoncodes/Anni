@@ -22,7 +22,7 @@ const MILESTONES = [
 
 export default function Timeline() {
     return (
-        <div style={{
+        <div className="timeline-page" style={{
             minHeight: '100vh',
             background: `linear-gradient(135deg, ${C.bg} 0%, #252347 50%, #2d1f3d 100%)`,
             fontFamily: '"JetBrains Mono", monospace',
@@ -70,6 +70,12 @@ export default function Timeline() {
                     ))}
                 </div>
             </div>
+            <style>{`
+                @media (max-width: 600px) {
+                    .timeline-page { padding: 32px 14px !important; }
+                    .timeline-page h1 { font-size: 24px !important; }
+                }
+            `}</style>
         </div>
     );
 }

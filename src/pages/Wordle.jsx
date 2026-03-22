@@ -279,7 +279,7 @@ export function WordleGame() {
                                             background: s.bg, border: `2px solid ${s.border}`,
                                             borderRadius: 10, fontSize: 22, fontWeight: 700, color: C.text,
                                             boxShadow: s.glow,
-                                        }}
+                                        }} className="wordle-cell"
                                     >
                                         {cell.letter}
                                     </motion.div>
@@ -337,7 +337,7 @@ export function WordleGame() {
                                         fontSize: isWide ? 11 : 14, fontWeight: 600, cursor: 'pointer',
                                         fontFamily: 'inherit', color: letterStates[k] === 'absent' ? C.muted : C.text,
                                         boxShadow: glow, transition: 'all 0.2s',
-                                    }}>
+                                    }} className={isWide ? 'wordle-key-wide' : 'wordle-key'}>
                                     {k}
                                 </motion.button>
                             );
@@ -345,6 +345,13 @@ export function WordleGame() {
                     </div>
                 ))}
             </div>
+            <style>{`
+                @media (max-width: 600px) {
+                    .wordle-cell { width: 42px !important; height: 42px !important; font-size: 18px !important; border-radius: 8px !important; }
+                    .wordle-key { width: 30px !important; height: 42px !important; font-size: 12px !important; }
+                    .wordle-key-wide { width: 48px !important; height: 42px !important; font-size: 10px !important; }
+                }
+            `}</style>
         </div>
     );
 }

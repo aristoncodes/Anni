@@ -130,7 +130,7 @@ export default function SlotMachine() {
                     borderRadius: 24, border: `1px solid ${C.border}`,
                     padding: '40px 36px', boxShadow: '0 8px 60px rgba(0,0,0,0.3)',
                     position: 'relative', overflow: 'hidden',
-                }}
+                }} className="slot-machine"
             >
                 {/* Glow behind reels */}
                 <div style={{
@@ -150,7 +150,7 @@ export default function SlotMachine() {
                                 border: `2px solid ${result?.type === 'jackpot' ? C.gold + '60' : C.border}`,
                                 fontSize: 48, boxShadow: result?.type === 'jackpot' ? `0 0 30px ${C.gold}20` : 'none',
                                 transition: 'border 0.3s, box-shadow 0.3s',
-                            }}
+                            }} className="slot-reel"
                         >
                             {SYMBOLS[r]}
                         </motion.div>
@@ -197,6 +197,12 @@ export default function SlotMachine() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <style>{`
+                @media (max-width: 600px) {
+                    .slot-machine { padding: 28px 20px !important; }
+                    .slot-reel { width: 72px !important; height: 72px !important; font-size: 38px !important; }
+                }
+            `}</style>
         </div>
     );
 }

@@ -342,7 +342,7 @@ export default function CpProblem() {
             {showConfetti && <HeartsConfetti />}
 
             {/* ── Header ── */}
-            <div style={{ maxWidth: 860, margin: '0 auto 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div className="cp-header" style={{ maxWidth: 860, margin: '0 auto 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ fontSize: 22, fontWeight: 700, color: C.lavender, letterSpacing: -0.5 }}>Loveforces</span>
                     <span style={{ fontSize: 11, color: C.muted, background: C.surface, padding: '3px 10px', borderRadius: 8 }}>Round #240321</span>
@@ -381,7 +381,7 @@ export default function CpProblem() {
                 {activeTab === 'problem' && (
                     <>
                         {/* Problem tabs */}
-                        <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+                        <div className="cp-prob-tabs" style={{ display: 'flex', gap: 6, marginBottom: 16, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', paddingBottom: 4 }}>
                             {PROBLEMS.map((p, i) => (
                                 <motion.button key={p.id} onClick={() => handleProblemChange(i)}
                                     whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
@@ -390,7 +390,7 @@ export default function CpProblem() {
                                         border: `1px solid ${activeProblem === i ? C.lavender + '40' : C.border}`,
                                         background: activeProblem === i ? C.lavender + '15' : C.surface,
                                         color: activeProblem === i ? C.lavender : C.muted,
-                                        cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                                        cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0,
                                         transition: 'all 0.2s',
                                     }}>
                                     {p.id}. {p.title}
@@ -404,7 +404,7 @@ export default function CpProblem() {
                                 style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}
                             >
                                 {/* Problem statement card */}
-                                <div style={{ ...cardBase, padding: '28px 28px 24px' }}>
+                                <div className="cp-card" style={{ ...cardBase, padding: '28px 28px 24px' }}>
                                     {/* Title + difficulty */}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                                         <h2 style={{ fontSize: 20, color: C.text, fontFamily: "'Playfair Display', serif", margin: 0 }}>
@@ -458,7 +458,7 @@ export default function CpProblem() {
                                     <p style={{ fontSize: 12, lineHeight: 1.8, color: C.text, opacity: 0.85 }}><Fmt text={problem.outputDesc} /></p>
 
                                     <h3 style={{ ...sectionTitle, marginTop: 18 }}>Example</h3>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+                                    <div className="cp-example-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                                         {[{ label: 'Input', data: problem.exampleIn }, { label: 'Output', data: problem.exampleOut }].map(ex => (
                                             <div key={ex.label}>
                                                 <div style={{ background: C.lavender + '12', padding: '6px 12px', fontSize: 10, fontWeight: 700, borderRadius: '8px 8px 0 0', color: C.lavender }}>{ex.label}</div>
@@ -660,6 +660,16 @@ export default function CpProblem() {
                     </motion.div>
                 )}
             </div>
+            <style>{`
+                @media (max-width: 600px) {
+                    .cp-header { flex-direction: column; align-items: flex-start !important; }
+                    .cp-header > div:last-child { width: 100%; flex-wrap: wrap; }
+                    .cp-prob-tabs::-webkit-scrollbar { display: none; }
+                    .cp-card { padding: 18px 16px 16px !important; }
+                    .cp-card h2 { font-size: 16px !important; }
+                    .cp-example-grid { grid-template-columns: 1fr !important; }
+                }
+            `}</style>
         </div>
     );
 }

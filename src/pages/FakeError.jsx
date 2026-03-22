@@ -169,6 +169,7 @@ export default function FakeError() {
                         exit={{ opacity: 0, filter: 'brightness(5)', scale: 1.05 }}
                         transition={{ duration: 0.4 }}
                         onClick={handleClick}
+                        className="bsod-stage"
                         style={{
                             minHeight: '100vh', background: '#0078d7',
                             color: '#fff', fontFamily: '"Segoe UI", "JetBrains Mono", monospace',
@@ -183,7 +184,7 @@ export default function FakeError() {
                                 transition={{ duration: 5, repeat: Infinity }}
                                 style={{ marginBottom: 20 }}
                             >
-                                <span style={{ fontSize: 90, fontWeight: 200, display: 'block', lineHeight: 1 }}>:(</span>
+                                <span className="bsod-face" style={{ fontSize: 90, fontWeight: 200, display: 'block', lineHeight: 1 }}>:(</span>
                             </motion.div>
 
                             {/* Stack trace lines */}
@@ -274,6 +275,7 @@ export default function FakeError() {
                     <motion.div key="decrypt"
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                         exit={{ opacity: 0, scale: 1.05 }}
+                        className="decrypt-stage"
                         style={{
                             minHeight: '100vh', background: '#0d1117',
                             fontFamily: '"JetBrains Mono", monospace', fontSize: 13,
@@ -345,7 +347,7 @@ export default function FakeError() {
                             }}
                         />
 
-                        <div style={{ textAlign: 'center', maxWidth: 480, position: 'relative', zIndex: 10 }}>
+                        <div className="reveal-content" style={{ textAlign: 'center', maxWidth: 480, position: 'relative', zIndex: 10 }}>
                             {/* Photo with spotlight */}
                             <motion.div
                                 initial={{ y: 50, opacity: 0, scale: 0.7, rotateY: 90 }}
@@ -429,6 +431,16 @@ export default function FakeError() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <style>{`
+                @media (max-width: 600px) {
+                    .bsod-stage { padding: 24px 20px !important; }
+                    .bsod-face { font-size: 60px !important; }
+                    .decrypt-stage { padding: 30px 20px !important; font-size: 11px !important; }
+                    .reveal-content { padding: 0 12px; }
+                    .reveal-content img { max-width: 300px !important; }
+                    .reveal-content h1 { font-size: 26px !important; }
+                }
+            `}</style>
         </motion.div>
     );
 }

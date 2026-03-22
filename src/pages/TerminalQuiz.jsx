@@ -380,7 +380,7 @@ export default function TerminalQuiz() {
                         {!quizDone ? (
                             <motion.div key={currentQ}
                                 initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
-                                style={{ maxWidth: 520, width: '100%', padding: 32, ...cardStyle }}>
+                                style={{ maxWidth: 520, width: '100%', padding: 32, ...cardStyle }} className="tq-quiz-card">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <span style={{ background: `${T.mint}18`, color: T.mint, padding: '4px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600, letterSpacing: 0.5 }}>
                                         Q{currentQ + 1}/{quizQs.length}
@@ -456,7 +456,7 @@ export default function TerminalQuiz() {
                         {!compatDone ? (
                             <motion.div key={`compat-${compatQ}`}
                                 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}
-                                style={{ maxWidth: 500, width: '100%', padding: 32, ...cardStyle }}>
+                                style={{ maxWidth: 500, width: '100%', padding: 32, ...cardStyle }} className="tq-compat-card">
                                 <div style={{ textAlign: 'center', marginBottom: 20 }}>
                                     <span style={{ fontSize: 36 }}>🧪</span>
                                     <h2 style={{ fontSize: 17, color: T.lavender, marginTop: 8, fontFamily: "'Playfair Display', serif" }}>
@@ -491,7 +491,7 @@ export default function TerminalQuiz() {
                                 <h3 style={{ fontSize: 16, marginBottom: 18, color: T.text, textAlign: 'center', fontWeight: 400, lineHeight: 1.5 }}>
                                     {COMPAT_QS[compatQ].q}
                                 </h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                <div className="tq-compat-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                                     {COMPAT_QS[compatQ].options.map((opt, idx) => (
                                         <motion.button key={idx} onClick={() => handleCompatAnswer(idx)}
                                             whileHover={{ scale: 1.02, borderColor: `${T.lavender}40` }}
@@ -546,6 +546,14 @@ export default function TerminalQuiz() {
                     </AnimatePresence>
                 </div>
             )}
+            <style>{`
+                @media (max-width: 600px) {
+                    .tq-quiz-card { padding: 20px 16px !important; }
+                    .tq-quiz-card h2 { font-size: 16px !important; }
+                    .tq-compat-card { padding: 20px 16px !important; }
+                    .tq-compat-grid { grid-template-columns: 1fr !important; }
+                }
+            `}</style>
         </div>
     );
 }

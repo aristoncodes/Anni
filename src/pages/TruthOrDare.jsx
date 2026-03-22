@@ -77,7 +77,7 @@ export default function TruthOrDare() {
                     transition={{ duration: 4, ease: [0.2, 0.8, 0.3, 1] }}
                     style={{ width: 320, height: 320, borderRadius: '50%', position: 'relative', overflow: 'hidden',
                         border: `3px solid ${C.border}`, boxShadow: `0 0 40px ${C.lavender}10, inset 0 0 20px rgba(0,0,0,0.3)`,
-                    }}
+                    }} className="tod-wheel"
                 >
                     <svg viewBox="0 0 320 320" style={{ width: '100%', height: '100%' }}>
                         {ITEMS.map((item, i) => {
@@ -161,6 +161,11 @@ export default function TruthOrDare() {
                     ))}
                 </div>
             )}
+            <style>{`
+                @media (max-width: 600px) {
+                    .tod-wheel { width: 260px !important; height: 260px !important; }
+                }
+            `}</style>
         </div>
     );
 }

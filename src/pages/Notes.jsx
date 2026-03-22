@@ -610,7 +610,7 @@ export default function Notes() {
             </motion.div>
 
             {/* ── Notes Board (masonry via CSS columns) ── */}
-            <div style={{
+            <div className="notes-board" style={{
                 maxWidth: 720, width: '100%', position: 'relative', zIndex: 1,
                 columns: '2 280px', columnGap: 14,
             }}>
@@ -660,6 +660,13 @@ export default function Notes() {
                     ))
                 )}
             </div>
+            <style>{`
+                @media (max-width: 600px) {
+                    .page-wrapper { padding: 40px 12px !important; }
+                    .page-wrapper h1 { font-size: 28px !important; }
+                    .notes-board { columns: 1 !important; }
+                }
+            `}</style>
         </div>
     );
 }

@@ -659,6 +659,7 @@ export default function Reasons() {
                             exit={{ scale: .8, opacity: 0, y: -30 }}
                             transition={{ type: 'spring', damping: 18, stiffness: 200 }}
                             onClick={(e) => e.stopPropagation()}
+                            className="reason-modal"
                             style={{
                                 position: 'relative', borderRadius: 28, padding: '48px 36px 40px', maxWidth: 420, width: '100%',
                                 textAlign: 'center', overflow: 'hidden',
@@ -711,6 +712,11 @@ export default function Reasons() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <style>{`
+                @media (max-width: 600px) {
+                    .reason-modal { padding: 28px 20px 28px !important; }
+                }
+            `}</style>
         </div>
     );
 }

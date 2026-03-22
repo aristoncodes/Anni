@@ -369,6 +369,8 @@ export default function Memories() {
                     .page-wrapper > div:nth-child(3) {
                         column-count: 1 !important;
                     }
+                    .page-wrapper h1 { font-size: 28px !important; }
+                    .page-wrapper { padding: 40px 12px !important; }
                 }
             `}</style>
         </div>
