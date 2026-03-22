@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { db } from '../firebase';
+import { ref, onValue, set } from 'firebase/database';
 
 /* ─── Event configurations — pastel palette matching the app ─── */
 const EVENTS = [
@@ -291,17 +293,23 @@ function CelebrationOverlay() {
 
 /* ─── Period Cycle Card ─── */
 function PeriodCycleCard() {
-    const [lastDate, setLastDate] = useState(() => {
-        return localStorage.getItem('periodLastDate') || '';
-    });
+    const [lastDate, setLastDate] = useState('');
     const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+    // Read from Firebase on mount
+    useEffect(() => {
+        const periodRef = ref(db, 'periodCycle/lastDate');
+        const unsub = onValue(periodRef, (snapshot) => {
+            const val = snapshot.val();
+            if (val) setLastDate(val);
+        });
+        return () => unsub();
+    }, []);
 
     const getNextPeriod = useCallback(() => {
         if (!lastDate) return null;
         const last = new Date(lastDate);
-        // Same date next month
         const next = new Date(last.getFullYear(), last.getMonth() + 1, last.getDate());
-        // If that's already passed, go another month ahead
         if (next <= new Date()) {
             next.setMonth(next.getMonth() + 1);
         }
@@ -327,7 +335,8 @@ function PeriodCycleCard() {
     const handleDateChange = (e) => {
         const val = e.target.value;
         setLastDate(val);
-        localStorage.setItem('periodLastDate', val);
+        // Save to Firebase
+        set(ref(db, 'periodCycle/lastDate'), val);
     };
 
     const nextPeriod = getNextPeriod();
