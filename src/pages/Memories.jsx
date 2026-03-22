@@ -3,6 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import mediaItems from '../assets/memories.json';
 
+/* ─── Hook: detect mobile ─── */
+const useIsMobile = (breakpoint = 768) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoint);
+    useEffect(() => {
+        const handler = () => setIsMobile(window.innerWidth <= breakpoint);
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, [breakpoint]);
+    return isMobile;
+};
+
 /* ─── Floating Hearts Background ─── */
 const FloatingHearts = () => {
     const hearts = ['💕', '✨', '💗', '🤍', '💫', '🩷'];
@@ -29,43 +40,150 @@ const FloatingHearts = () => {
 
 /* ─── Collage height pattern: creates visual rhythm ─── */
 const getCardHeight = (index) => {
-    // Thoughtful collage pattern: alternating tall/short/medium creates rhythm
     const pattern = [
         280, 220, 320, 240, 200, 300, 260, 340, 220, 280,
         240, 310, 200, 270, 330, 250, 210, 290, 260, 300,
     ];
-    // Videos get a bit more height to feel cinematic
     return pattern[index % pattern.length];
 };
 
+/* ─── Deterministic tilt for polaroid effect ─── */
+const getTilt = (index) => {
+    const tilts = [-2.2, 1.5, -1.0, 2.0, -1.8, 0.8, -2.5, 1.2, -0.6, 2.4];
+    return tilts[index % tilts.length];
+};
+
+/* ─── Hero Memory (mobile only) ─── */
+const HeroMemory = ({ item, onClick }) => {
+    const [loaded, setLoaded] = useState(false);
+    return (
+        <motion.div
+            className="memories-hero"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            onClick={onClick}
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '60vh',
+                borderRadius: 18,
+                overflow: 'hidden',
+                cursor: 'pointer',
+                marginBottom: 28,
+                boxShadow: '0 8px 40px rgba(216,27,96,0.2), 0 0 60px rgba(206,147,216,0.1)',
+            }}
+        >
+            {/* Ken Burns zoom */}
+            <img
+                src={`https://drive.google.com/thumbnail?id=${item.id}&sz=w800`}
+                alt={item.caption}
+                loading="eager"
+                onLoad={() => setLoaded(true)}
+                className="hero-img"
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    opacity: loaded ? 1 : 0,
+                    transition: 'opacity 0.6s ease',
+                }}
+                onError={(e) => { e.target.src = `https://drive.google.com/uc?id=${item.id}&export=view`; }}
+            />
+
+            {/* Gradient overlay */}
+            <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%)',
+                pointerEvents: 'none',
+            }} />
+
+            {/* Caption */}
+            <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                padding: '20px 18px',
+                zIndex: 2,
+            }}>
+                <span style={{
+                    color: '#fff', fontSize: 16, fontWeight: 600,
+                    textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    letterSpacing: '0.3px',
+                }}>
+                    {item.caption}
+                </span>
+            </div>
+
+            {/* Badge */}
+            <div style={{
+                position: 'absolute', top: 14, right: 14,
+                background: 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(12px)',
+                borderRadius: 20, padding: '6px 14px',
+                color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: 500,
+                border: '1px solid rgba(255,255,255,0.15)',
+                zIndex: 2,
+            }}>
+                📸 {mediaItems.length} memories
+            </div>
+
+            {/* Video badge */}
+            {item.type === 'video' && (
+                <div style={{
+                    position: 'absolute', top: 14, left: 14,
+                    background: 'rgba(0,0,0,0.55)', borderRadius: '50%',
+                    width: 36, height: 36,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 2,
+                }}>
+                    <span style={{ fontSize: 16 }}>▶</span>
+                </div>
+            )}
+        </motion.div>
+    );
+};
+
 /* ─── Memory Card ─── */
-const MemoryCard = ({ p, i, onClick }) => {
+const MemoryCard = ({ p, i, onClick, isMobile }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const cardHeight = p.type === 'video' ? getCardHeight(i) + 40 : getCardHeight(i);
+    const tilt = isMobile ? getTilt(i) : 0;
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{
+                duration: 0.45,
+                delay: isMobile ? (i % 4) * 0.08 : 0,
+                ease: 'easeOut',
+            }}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            className={isMobile ? 'memory-card-mobile' : ''}
             style={{
                 breakInside: 'avoid',
                 marginBottom: 14,
-                borderRadius: '14px',
+                borderRadius: isMobile ? 16 : 14,
                 overflow: 'hidden',
                 cursor: 'pointer',
                 position: 'relative',
                 height: cardHeight,
                 background: '#1a1a2e',
+                transform: `rotate(${tilt}deg) ${isHovered ? 'scale(1.015)' : 'scale(1)'}`,
                 boxShadow: isHovered
                     ? '0 16px 40px rgba(0,0,0,0.25)'
-                    : '0 4px 16px rgba(0,0,0,0.1)',
-                transform: isHovered ? 'scale(1.015)' : 'scale(1)',
+                    : isMobile
+                        ? '0 4px 20px rgba(0,0,0,0.15)'
+                        : '0 4px 16px rgba(0,0,0,0.1)',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                // Polaroid white border on mobile
+                border: isMobile
+                    ? '3px solid rgba(255,255,255,0.06)'
+                    : 'none',
             }}
         >
             {/* Skeleton shimmer */}
@@ -116,7 +234,7 @@ const MemoryCard = ({ p, i, onClick }) => {
                 </>
             )}
 
-            {/* Caption overlay - clean gradient, no glass */}
+            {/* Caption overlay */}
             <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 background: 'linear-gradient(transparent, rgba(0,0,0,0.65))',
@@ -143,6 +261,7 @@ export default function Memories() {
     const [visibleCount, setVisibleCount] = useState(30);
     const observerRef = useRef(null);
     const sentinelRef = useRef(null);
+    const isMobile = useIsMobile();
 
     // Infinite scroll
     const loadMore = useCallback(() => {
@@ -173,8 +292,12 @@ export default function Memories() {
         return () => window.removeEventListener('keydown', handleKey);
     }, [lightbox, visibleCount]);
 
+    // Items to render in the grid (skip first on mobile — it's the hero)
+    const gridStartIndex = isMobile ? 1 : 0;
+    const gridItems = mediaItems.slice(gridStartIndex, visibleCount);
+
     return (
-        <div className="page-wrapper" style={{ padding: '60px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div className="page-wrapper memories-page" style={{ padding: '60px 24px', position: 'relative', overflow: 'hidden' }}>
             <FloatingHearts />
 
             {/* ─── Animated Gradient Header ─── */}
@@ -182,7 +305,7 @@ export default function Memories() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                style={{ textAlign: 'center', marginBottom: 52, position: 'relative', zIndex: 1 }}
+                style={{ textAlign: 'center', marginBottom: isMobile ? 32 : 52, position: 'relative', zIndex: 1 }}
             >
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                     <span style={{ fontSize: 52, display: 'block', marginBottom: 4 }} className="animate-float">📸</span>
@@ -209,8 +332,13 @@ export default function Memories() {
                 }} />
             </motion.div>
 
-            {/* ─── CSS Columns Masonry Grid (no overlap) ─── */}
-            <div style={{
+            {/* ─── Hero Memory (mobile only) ─── */}
+            {isMobile && mediaItems.length > 0 && (
+                <HeroMemory item={mediaItems[0]} onClick={() => setLightbox(0)} />
+            )}
+
+            {/* ─── CSS Columns Masonry Grid ─── */}
+            <div className="memories-grid" style={{
                 columnCount: 3,
                 columnGap: 14,
                 maxWidth: 1000,
@@ -219,9 +347,18 @@ export default function Memories() {
                 position: 'relative',
                 zIndex: 1,
             }}>
-                {mediaItems.slice(0, visibleCount).map((p, i) => (
-                    <MemoryCard key={`${p.id}-${i}`} p={p} i={i} onClick={() => setLightbox(i)} />
-                ))}
+                {gridItems.map((p, i) => {
+                    const actualIndex = gridStartIndex + i;
+                    return (
+                        <MemoryCard
+                            key={`${p.id}-${actualIndex}`}
+                            p={p}
+                            i={i}
+                            isMobile={isMobile}
+                            onClick={() => setLightbox(actualIndex)}
+                        />
+                    );
+                })}
             </div>
 
             {/* Infinite scroll sentinel */}
@@ -360,17 +497,37 @@ export default function Memories() {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
                 }
+                @keyframes kenBurns {
+                    0% { transform: scale(1); }
+                    100% { transform: scale(1.08); }
+                }
+                @keyframes glowPulse {
+                    0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.15), 0 0 15px rgba(216,27,96,0.12), 0 0 30px rgba(206,147,216,0.06); }
+                    50% { box-shadow: 0 4px 20px rgba(0,0,0,0.15), 0 0 20px rgba(216,27,96,0.2), 0 0 40px rgba(206,147,216,0.12); }
+                }
+
+                /* ─── Hero ken-burns ─── */
+                .hero-img {
+                    animation: kenBurns 12s ease-in-out infinite alternate;
+                }
+
+                /* ─── Mobile glassmorphism glow on cards ─── */
+                .memory-card-mobile {
+                    animation: glowPulse 4s ease-in-out infinite;
+                }
+
+                /* ─── Responsive ─── */
                 @media (max-width: 768px) {
-                    .page-wrapper > div:nth-child(3) {
+                    .memories-grid {
                         column-count: 2 !important;
                     }
                 }
                 @media (max-width: 480px) {
-                    .page-wrapper > div:nth-child(3) {
+                    .memories-grid {
                         column-count: 1 !important;
                     }
-                    .page-wrapper h1 { font-size: 28px !important; }
-                    .page-wrapper { padding: 40px 12px !important; }
+                    .memories-page h1 { font-size: 28px !important; }
+                    .memories-page { padding: 40px 12px !important; }
                 }
             `}</style>
         </div>
