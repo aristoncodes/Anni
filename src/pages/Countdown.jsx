@@ -691,7 +691,9 @@ export default function Countdown() {
         );
     }
 
-    const sortedEvents = [...EVENTS].sort((a, b) => getNextDate(a) - getNextDate(b));
+    const anniversary = EVENTS.find(e => e.name === 'Our Anniversary');
+    const rest = EVENTS.filter(e => e.name !== 'Our Anniversary').sort((a, b) => getNextDate(a) - getNextDate(b));
+    const sortedEvents = [anniversary, ...rest];
 
     return (
         <div className="page-wrapper" style={{ padding: '50px 24px', minHeight: '100vh', position: 'relative' }}>
