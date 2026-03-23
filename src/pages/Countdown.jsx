@@ -642,12 +642,13 @@ function LoveQuote() {
 /* ─── Main Page ─── */
 export default function Countdown() {
     const [, setTick] = useState(0);
+    const [skipCelebration, setSkipCelebration] = useState(false);
     useEffect(() => { const id = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(id); }, []);
 
     const now = new Date();
     const isCelebration = now.getMonth() === 2 && now.getDate() === 24;
 
-    if (isCelebration) {
+    if (isCelebration && !skipCelebration) {
         return (
             <div className="page-wrapper" style={{ justifyContent: 'center', minHeight: '100vh', overflow: 'hidden', position: 'relative' }}>
                 <CelebrationOverlay />
@@ -661,6 +662,30 @@ export default function Countdown() {
                     <p style={{ color: 'var(--text-light)', fontSize: 18, maxWidth: 420, margin: '0 auto' }}>
                         Today marks another beautiful year of us together! 🥂
                     </p>
+                    <motion.button
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.2, duration: 0.5 }}
+                        whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(212,96,122,0.3)' }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setSkipCelebration(true)}
+                        style={{
+                            marginTop: 32,
+                            padding: '14px 36px',
+                            fontSize: 15,
+                            fontWeight: 700,
+                            fontFamily: 'Inter, sans-serif',
+                            color: '#fff',
+                            background: 'linear-gradient(135deg, #d4607a, #8b5ca0)',
+                            border: 'none',
+                            borderRadius: 50,
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 20px rgba(212,96,122,0.25)',
+                            letterSpacing: 0.5,
+                        }}
+                    >
+                        View Countdowns →
+                    </motion.button>
                 </motion.div>
             </div>
         );
