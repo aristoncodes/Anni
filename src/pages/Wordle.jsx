@@ -10,7 +10,7 @@ const C = {
 };
 
 /* ── Word Pool ── */
-const WORDS = ['JIMJAM', 'HEARTS', 'KISSES', 'CUDDLE', 'LOVERS', 'HUGGER', 'ADORBS', 'WARMTH', 'DREAMY', 'CHERUB'];
+const WORDS = ['JIMJAM', 'HEARTS', 'KISSES', 'CUDDLE', 'LOVERS', 'HUGGER', 'DREAMY'];
 const HINTS = {
     JIMJAM: ['A name for a very special duo 💕', 'Starts with J... think about US 💓', 'Two names combined into one 🥰'],
     HEARTS: ['The organ of love ❤️', 'They beat faster when you see someone special', 'Draw them everywhere 💕'],
@@ -27,9 +27,9 @@ const HINTS = {
 const WIN_MESSAGES = ['You know me so well 💖', 'Soulmate energy! ✨', 'Our hearts think alike 💕', 'You\'re a genius in love 🧠❤️', 'We\'re so connected 🔗💖'];
 
 const KEYS = [
-    ['Q','W','E','R','T','Y','U','I','O','P'],
-    ['A','S','D','F','G','H','J','K','L'],
-    ['ENTER','Z','X','C','V','B','N','M','⌫'],
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫'],
 ];
 
 function checkGuess(guess, answer) {
@@ -58,12 +58,12 @@ const stateColors = {
 function Confetti() {
     const p = Array.from({ length: 20 }, (_, i) => ({
         id: i, x: Math.random() * 100, d: Math.random() * 0.5, s: 12 + Math.random() * 16,
-        e: ['💕','❤️','✨','💖','🎉','⭐'][Math.floor(Math.random() * 6)],
+        e: ['💕', '❤️', '✨', '💖', '🎉', '⭐'][Math.floor(Math.random() * 6)],
     }));
     return <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 100 }}>
         {p.map(h => <motion.div key={h.id}
             initial={{ y: '110vh', x: `${h.x}vw`, opacity: 1, scale: 0 }}
-            animate={{ y: '-10vh', opacity: [0,1,1,0], scale: [0,1.2,1,0.5] }}
+            animate={{ y: '-10vh', opacity: [0, 1, 1, 0], scale: [0, 1.2, 1, 0.5] }}
             transition={{ duration: 2.5, delay: h.d, ease: 'easeOut' }}
             style={{ position: 'absolute', fontSize: h.s }}
         >{h.e}</motion.div>)}
@@ -75,8 +75,10 @@ function StatsModal({ stats, onClose }) {
     const maxDist = Math.max(...Object.values(stats.dist), 1);
     return <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 200,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 200,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24
+        }}>
         <motion.div initial={{ scale: 0.8, y: 20 }} animate={{ scale: 1, y: 0 }}
             onClick={e => e.stopPropagation()}
             style={{
@@ -96,7 +98,7 @@ function StatsModal({ stats, onClose }) {
                 </div>)}
             </div>
             <div style={{ fontSize: 11, color: C.muted, marginBottom: 10 }}>Guess Distribution</div>
-            {[1,2,3,4,5,6].map(n => <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            {[1, 2, 3, 4, 5, 6].map(n => <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <span style={{ color: C.muted, fontSize: 11, width: 12 }}>{n}</span>
                 <motion.div initial={{ width: 0 }} animate={{ width: `${Math.max((stats.dist[n] || 0) / maxDist * 100, 8)}%` }}
                     transition={{ delay: n * 0.1 }}
