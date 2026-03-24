@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Config ─── */
-const PASSWORD = '2403';
+const PASSWORD = '240321';
 
 const PAGES = [
     { icon: '💖', title: 'Reasons I Love You', tagline: 'Pop some balloons to find out', path: '/reasons-c7d4e5f6', color: '#FFC0CB' },
