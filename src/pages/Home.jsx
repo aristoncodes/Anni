@@ -185,7 +185,7 @@ function PasswordScreen({ onSuccess }) {
                             fontFamily: '"JetBrains Mono", monospace',
                             marginBottom: 12,
                         }}>
-                            > Enter access code to continue:
+                            Enter access code to continue:
                         </div>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                             <div style={{
