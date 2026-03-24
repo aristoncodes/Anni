@@ -14,6 +14,7 @@ import FlappyHeart from './pages/FlappyHeart';
 import TruthOrDare from './pages/TruthOrDare';
 import Memories from './pages/Memories';
 import FakeError from './pages/FakeError';
+import Home from './pages/Home';
 
 /* ─── Anniversary Splash (March 24 only) ─── */
 const HEARTS = ['💕', '❤️', '💖', '💗', '💝', '💜', '🩷', '🤍', '💐', '🌹', '✨', '🫶'];
@@ -302,6 +303,7 @@ export default function App() {
                 )}
             </AnimatePresence>
             <Routes>
+                <Route path="/" element={<Home />} />
                 <Route path="/timeline-8f92a1b3" element={<Timeline />} />
                 <Route path="/reasons-c7d4e5f6" element={<Reasons />} />
                 <Route path="/problem-a-optimal-match-x9y8z7" element={<CpProblem />} />
