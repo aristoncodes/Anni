@@ -495,7 +495,7 @@ function Dashboard() {
                         fontFamily: '"JetBrains Mono", monospace',
                     }}
                 >
-                    // built with love, compiled with care 💕
+                    // built with love, by JAM 💕
                 </motion.div>
             </div>
 
